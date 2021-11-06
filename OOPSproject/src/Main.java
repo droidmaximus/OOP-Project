@@ -8,23 +8,28 @@ public class Main {
     static final String PASS = "password"; // Database Password
 
     public static void main(String[] args) {
-        switch ("-p") { // flags
+        Operations_implementation op1 = new Operations_implementation();
+        try {
 
-        case "-h": // help
-        {
-            System.out.println(" -h: help");
-            System.out.println(" -c: create table ");
-            System.out.println(" -p: print all the columns");
-            break;
-        }
+            Connection con = DriverManager.getConnection(DB_URL, USER, PASS);  // connection
+            Statement stmt = con.createStatement();  // statement
+            String sql; // sql query
 
-        case "-c": // create
-        {
-            Operations_implementation op1 = new Operations_implementation();
-            try {
-                Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
-                Statement stmt = con.createStatement();
-                String sql;
+            switch (args[0]) { // flags
+
+            case "-h": // help
+            {
+                System.out.println(" -h: help");
+                System.out.println(" -c: create table ");
+                System.out.println(" -p: print all the columns");
+                System.out.println(" -i: insert data into the columns");
+                System.out.println(" -q: quit");
+                break;
+            }
+
+            case "-c": // create
+            {
+
                 String[] columnName = new String[4];
                 String[] columnType = new String[4];
                 columnName[0] = "id";
@@ -40,18 +45,11 @@ public class Main {
 
                 stmt.executeUpdate(sql);
                 System.out.println("Table created successfully");
-                con.close();
-            } catch (Exception e) {
-                System.out.println(e);
+                break;
             }
-            break;
-        }
 
-        case "-p": {
-            Operations_implementation op1 = new Operations_implementation();
-            try {
-                Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
-                Statement stmt = con.createStatement();
+            case "-p": {
+
                 ResultSet rs = stmt.executeQuery(op1.printTable("REGISTRATION"));
                 while (rs.next()) {
                     System.out.println("ID = " + rs.getInt(1) + ", First = " + rs.getString(2) + ", Last = "
@@ -59,17 +57,12 @@ public class Main {
                 }
                 rs.close();
                 con.close();
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-            break;
-        }
 
-        case "-i": {
-            try {
-                Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
-                Statement stmt = con.createStatement();
-                String sql = "INSERT INTO Registration VALUES (100, 'Zara', 'Ali', 18)";
+                break;
+            }
+
+            case "-i": {
+                sql = "INSERT INTO Registration VALUES (100, 'Zara', 'Ali', 18)";
                 stmt.executeUpdate(sql);
                 sql = "INSERT INTO Registration VALUES (101, 'Mahnaz', 'Fatma', 25)";
                 stmt.executeUpdate(sql);
@@ -77,17 +70,19 @@ public class Main {
                 stmt.executeUpdate(sql);
                 sql = "INSERT INTO Registration VALUES(103, 'Sumit', 'Mittal', 28)";
                 stmt.executeUpdate(sql);
-                System.out.println("Inserted records into the table...");
-            } catch (Exception e) {
-                System.out.println(e);
+                System.out.println("Data inserted successfully");
+                break;
             }
-            break;
-        }
-        case "-q": {
-            break;
-        }
 
-        }
+            case "-q": {
+                break;
+            }
 
+            }
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
+
 }
